@@ -21,6 +21,8 @@ namespace BDP_Updater
 
         private bool _updateActive;
 
+        private bool _fileIsUpToDate;
+
         #endregion
 
         #region Constructors
@@ -30,11 +32,12 @@ namespace BDP_Updater
             InitializeComponent();
 
             _updateActive = false;
+            _fileIsUpToDate = false;
             _regManager = new RegistryManager();
             UpdateManager.AssignNotifyUserDelegate(NotifyUser);
 
             _updateCheckTimer = new SysTimer();
-            _updateCheckTimer.Interval = 5000;//600000; //10 dakika
+            _updateCheckTimer.Interval = 20000;//600000; //10 dakika
             _updateCheckTimer.Elapsed += _updateCheckTimer_Elapsed;
             _updateCheckTimer.Start();
         }
@@ -57,9 +60,15 @@ namespace BDP_Updater
                 if (UpdateManager.CheckForUpdates(_regManager))
                 {
                     NotifyUser("Dosya Güncelleme!", "Yeni bir güncelleme bulundu.");
+                    _fileIsUpToDate = false;
+                }
+                else if (!_fileIsUpToDate)
+                {
+                    NotifyUser("BDP Durumu", "Beyanname Düzenleme Programı güncel!");
+                    _fileIsUpToDate = true;
                 }
 
-                //_updateActive = false;
+                _updateActive = false;
             }
         }
 
@@ -77,7 +86,9 @@ namespace BDP_Updater
             downloadNotification.BalloonTipTitle = title;
             downloadNotification.BalloonTipText = text;
             downloadNotification.BalloonTipIcon = ToolTipIcon.Warning;
-            downloadNotification.ShowBalloonTip(5000);
+            downloadNotification.ShowBalloonTip(3000);
+            
+            //downloadNotification.Visible = false;
         }
 
         #endregion

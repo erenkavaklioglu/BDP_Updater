@@ -77,11 +77,18 @@ namespace BDP_Updater
         /// </summary>
         /// <param name="key">Kayıt eklenecek registry</param>
         /// <param name="value">Kayıt değeri</param>
-        private void AddValueToRegistry(RegistryKey regKey, string keyValue, string value)
+        private void AddValueToRegistry(RegistryKey regKey, string keyValue, string value, bool checkForNullControl = false)
         {
             if (null != regKey)
             {
-                if (null == regKey.GetValue(keyValue))
+                if (checkForNullControl)
+                {
+                    if (null == regKey.GetValue(keyValue))
+                    {
+                        regKey.SetValue(keyValue, value);
+                    }
+                }
+                else
                 {
                     regKey.SetValue(keyValue, value);
                 }
@@ -111,9 +118,9 @@ namespace BDP_Updater
                 _regKey = localMachine.CreateSubKey(_baseKey);
             }
 
-            AddValueToRegistry(_regKey, _yearKey, "2000");
-            AddValueToRegistry(_regKey, _monthKey, "01");
-            AddValueToRegistry(_regKey, _dayKey, "01");
+            AddValueToRegistry(_regKey, _yearKey, "2000", true);
+            AddValueToRegistry(_regKey, _monthKey, "01", true);
+            AddValueToRegistry(_regKey, _dayKey, "01", true);
         }
 
         /// <summary>
